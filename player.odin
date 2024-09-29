@@ -8,10 +8,10 @@ Player :: struct {
     health: int,
 }
 
-player_init :: proc() -> Player {
+player_new :: proc(y_pos, x_pos : i32 , health : int ) -> Player {
     return {
-        position = {14 , 14 },
-        health = 20,
+        position = {x_pos , y_pos },
+        health = health,
     }
 }
 

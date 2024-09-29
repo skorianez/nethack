@@ -7,17 +7,17 @@ main :: proc() {
     defer cur.endwin()
     //defer cur.getch()
     
-    mapa := Map{}
-    map_init(&mapa)
+    level := Level{}
+    level_init(&level, 1)
 
-    user := player_init() // TODO: put in map?
+    user := player_new(14, 14, 20) 
     player_draw(&user)
 
     for {
         ch := cur.getch()        
         if ch == 'q'{ break }
         newPos := player_input(&user, ch)
-        player_check_position(&user, newPos, mapa.level)
+        player_check_position(&user, newPos, level.tiles)
 
         player_draw(&user)
     }

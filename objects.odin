@@ -6,8 +6,6 @@ Position :: struct {
     x, y: i32,
 }
 
-
-
 Monster :: struct {
 
 }
