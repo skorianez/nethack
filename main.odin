@@ -6,7 +6,9 @@ main :: proc() {
     screen_init()
     defer cur.endwin()
     
-    mapSetup()
+    mapa := map_init()
+    map_draw(&mapa)
+
     user := player_init()
     player_draw(&user)
 
@@ -18,7 +20,6 @@ main :: proc() {
         player_draw(&user)
     }
 }
-
 
 screen_init :: proc() {
     cur.initscr()
