@@ -7,6 +7,10 @@ import "core:math/rand"
 MAXLEVELROW :: 25
 MAXLEVELCOL :: 100
 
+Position :: struct {
+    x, y: i32,
+}
+
 Level :: struct {
     level : int,
     tiles : [MAXLEVELROW][MAXLEVELCOL]cur.chtype,
@@ -21,6 +25,16 @@ level_init :: proc(l : ^Level, level : int) {
     append(&l.rooms, room_init(40, 10, 8, 12)) 
     level_draw(l)
     tiles_save_position(&l.tiles)
+    level_add_monsters(l)
+}
+
+level_add_monsters :: proc(l: ^Level) {
+    coin := [2]bool {false, true}
+    for &x in l.rooms {
+        if rand.choice(coin[:])  {
+            append(&l.monsters, monster_select(l.level, &x))
+        }
+    }
 }
 
 level_draw :: proc(l: ^Level) {
@@ -57,8 +71,6 @@ tiles_save_position :: proc(l: ^[MAXLEVELROW][MAXLEVELCOL]cur.chtype) {
 
 tiles_debug :: proc(l : ^[MAXLEVELROW][MAXLEVELCOL]cur.chtype ){
     ymax, xmax := cur.getmaxyx(cur.stdscr)
-    // assert(MAXLEVELROW > ymax, "Muitas linhas")
-    // assert(MAXLEVELCOL > xmax, "Muitas colunas")
     yt := MAXLEVELROW > ymax ? ymax : MAXLEVELROW
     xt := MAXLEVELROW > xmax ? xmax : MAXLEVELCOL
     cur.clear()

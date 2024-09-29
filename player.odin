@@ -1,7 +1,6 @@
 package main
 
 import cur "extra:curses"
-import "core:fmt"
 
 Player :: struct {
     position : Position,
@@ -35,10 +34,7 @@ player_input :: proc(p : ^Player, input : i32) -> Position{
 }
 
 player_move :: proc(p : ^Player, pos :Position, level : [MAXLEVELROW][MAXLEVELCOL]cur.chtype ) {
-
-    floor := fmt.ctprintf("%c", level[p.position.y][p.position.x])
-    cur.mvprintw(p.position.y, p.position.x, floor)
-    
+    cur.mvaddch(p.position.y, p.position.x, level[p.position.y][p.position.x])
     p.position = pos
     player_draw(p)
 }
