@@ -3,6 +3,9 @@ package main
 import cur "extra:curses"
 import "core:math/rand"
 
+MAXLEVELROW :: 25
+MAXLEVELCOL :: 100
+
 Room :: struct {
     position : Position,
     height, width : i32,
@@ -12,14 +15,16 @@ Room :: struct {
 }
 
 Map :: struct {
-    rooms : [dynamic]Room
+    level : [MAXLEVELROW][MAXLEVELCOL]cur.chtype,
+    rooms : [dynamic]Room,
 }
-
 
 map_init :: proc(m : ^Map)  {
     append(&m.rooms, room_init(13, 13, 6, 8))
     append(&m.rooms, room_init(40, 2, 6, 8))
-    append(&m.rooms, room_init(40, 10, 8, 12))   
+    append(&m.rooms, room_init(40, 10, 8, 12)) 
+    map_draw(m)
+    level_save_position(&m.level)
 }
 
 map_draw :: proc(m: ^Map) {
@@ -52,29 +57,13 @@ room_debug :: proc(r : ^Room, posy : i32) {
     cur.mvprintw(posy + 3, 0 ,"Door Right  : FIX:%d, ROW:%d", r.doors[3].x , r.doors[3].y)
 }
 
-
 room_init :: proc(x, y, h, w : i32) -> Room {
     d : [4]Position
 
-    d[0] = {
-        i32(rand.uint32()) %% (w - 2) + x + 1,
-        y
-    } // top door
-
-    d[1] = {
-        x, 
-        i32(rand.uint32()) %% (h - 2) + y + 1
-    } // left door
-    
-    d[2] = {
-        i32(rand.uint32()) %% (w - 2) + x + 1,
-        y + h - 1
-    } // bottom door
-
-    d[3] = {
-        x + w - 1,
-        i32(rand.uint32()) %% (h - 2) + y + 1
-    } // right door
+    d[0] = {i32(rand.uint32()) %% (w - 2) + x + 1, y}         // top door
+    d[1] = {x, i32(rand.uint32()) %% (h - 2) + y + 1}         // left door
+    d[2] = {i32(rand.uint32()) %% (w - 2) + x + 1, y + h - 1} // bottom door
+    d[3] = {x + w - 1, i32(rand.uint32()) %% (h - 2) + y + 1} // right door
 
     return {
         doors = d,
@@ -142,4 +131,32 @@ door_connect :: proc(door1, door2 : ^Position) {
         cur.mvprintw(temp.y, temp.x, "#")
         //cur.getch()
     }
+}
+
+level_save_position :: proc(l: ^[MAXLEVELROW][MAXLEVELCOL]cur.chtype) {
+    //positions : [MAXLEVELROW][MAXLEVELCOL]u8
+    for y in 0..<MAXLEVELROW {
+        for x in 0..<MAXLEVELCOL {
+            l[y][x] = cur.mvinch(i32(y), i32(x))
+        }
+    }
+    //return positions
+}
+
+level_debug :: proc(l : ^[MAXLEVELROW][MAXLEVELCOL]cur.chtype ){
+    ymax, xmax := cur.getmaxyx(cur.stdscr)
+    // assert(MAXLEVELROW > ymax, "Muitas linhas")
+    // assert(MAXLEVELCOL > xmax, "Muitas colunas")
+    yt := MAXLEVELROW > ymax ? ymax : MAXLEVELROW
+    xt := MAXLEVELROW > xmax ? xmax : MAXLEVELCOL
+    cur.clear()
+    cur.refresh()
+    for y in 0..<yt {
+        for x in 0..<xt {
+            cur.mvaddch(y, x, cur.chtype(l[y][x]))
+            //cur.mvaddch(y,x,'+')
+        }
+    }
+    cur.mvprintw(0,0,"** COPIA **")
+    
 }

@@ -9,16 +9,15 @@ main :: proc() {
     
     mapa := Map{}
     map_init(&mapa)
-    map_draw(&mapa)
-    //map_debug(&mapa)
 
-     user := player_init()
+    user := player_init() // TODO: put in map?
     player_draw(&user)
 
     for {
         ch := cur.getch()        
         if ch == 'q'{ break }
-        player_input(&user, ch)
+        newPos := player_input(&user, ch)
+        player_check_position(&user, newPos, mapa.level)
 
         player_draw(&user)
     }

@@ -1,6 +1,7 @@
 package main
 
 import cur "extra:curses"
+import "core:fmt"
 
 Player :: struct {
     position : Position,
@@ -18,31 +19,33 @@ player_draw :: proc(p : ^Player) {
     cur.mvprintw(p.position.y, p.position.x, "@")
 }
 
-player_input :: proc(p : ^Player, input : i32) {
-    newX, newY := p.position.x, p.position.y
+player_input :: proc(p : ^Player, input : i32) -> Position{
+    newPos := p.position
     switch input {
         case 'w', 'W':
-            newY -= 1
+            newPos.y -= 1
         case 's', 'S':
-            newY += 1
+            newPos.y += 1
         case 'a', 'A':
-            newX -= 1
+            newPos.x -= 1
         case 'd', 'D':
-            newX += 1
+            newPos.x += 1
     }
-    player_check_position(p, newY, newX)
+    return newPos
 }
 
-player_move :: proc(p : ^Player, y,x :i32 ) {
-    cur.mvprintw(p.position.y, p.position.x, ".")
-    p.position.x = x
-    p.position.y = y
+player_move :: proc(p : ^Player, pos :Position, level : [MAXLEVELROW][MAXLEVELCOL]cur.chtype ) {
+
+    floor := fmt.ctprintf("%c", level[p.position.y][p.position.x])
+    cur.mvprintw(p.position.y, p.position.x, floor)
+    
+    p.position = pos
     player_draw(p)
 }
 
-player_check_position :: proc(p : ^Player, y, x :i32 ) {
-    switch cur.mvinch(y, x) {
+player_check_position :: proc(p : ^Player, pos : Position, level : [MAXLEVELROW][MAXLEVELCOL]cur.chtype) {
+    switch cur.mvinch(pos.y, pos.x) {
         case '.', '#', '+':
-            player_move(p, y, x)
+            player_move(p, pos, level)
     }
 }
