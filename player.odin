@@ -42,7 +42,7 @@ player_move :: proc(p : ^Player, y,x :i32 ) {
 
 player_check_position :: proc(p : ^Player, y, x :i32 ) {
     switch cur.mvinch(y, x) {
-        case '.':
+        case '.', '#', '+':
             player_move(p, y, x)
     }
 }
