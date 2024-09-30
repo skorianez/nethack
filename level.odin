@@ -63,17 +63,21 @@ tiles_save_position :: proc(l: ^[MAXLEVELROW][MAXLEVELCOL]cur.chtype) {
 
 level_move_monsters :: proc(l: ^Level) {
     for &m in l.monsters {
-        if m.pathfinding == 1 {
-            // RANDOM
-        } else {
-            // SEEK
-            cur.mvaddch(m.position.y, m.position.x, '.')
-            pathfinding_seek(&m.position, l.player.position)
-            monster_draw(&m)
+        if m.health <= 0 {
+            continue
         }
+
+        cur.mvaddch(m.position.y, m.position.x, '.')
+
+        if m.pathfinding == 1 {
+            pathfinding_random(&m.position)
+        } else {
+            pathfinding_seek(&m.position, l.player.position)
+        }
+
+        monster_draw(&m)
     }
 }
-
 
 pathfinding_seek :: proc(start : ^Position, dest: Position) {
     // step left
@@ -94,3 +98,32 @@ pathfinding_seek :: proc(start : ^Position, dest: Position) {
             start.y -= 1
     }
 }
+
+pathfinding_random :: proc(pos : ^Position) {
+    random := rand.uint32() %% 5
+    switch random {
+        case 0:
+            if cur.mvinch(pos.y - 1, pos.x) == '.'
+            {
+                pos.y -= 1
+            }
+        case 1:
+            if cur.mvinch(pos.y + 1, pos.x) == '.'
+            {
+                pos.y += 1
+            }
+        case 2:
+            if cur.mvinch(pos.y , pos.x - 1) == '.'
+            {
+                pos.x -= 1
+            }
+        case 3:
+            if cur.mvinch(pos.y , pos.x + 1) == '.'
+            {
+                pos.x += 1
+            }
+        case 4:
+            // nothing
+    }
+}
+

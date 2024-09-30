@@ -5,12 +5,14 @@ import cur "extra:curses"
 Player :: struct {
     position : Position,
     health: int,
+    attack: int,
 }
 
 player_new :: proc(y_pos, x_pos : i32 , health : int ) -> Player {
     return {
         position = {x_pos , y_pos },
         health = health,
+        attack = 1,
     }
 }
 
@@ -39,9 +41,12 @@ player_move :: proc(p : ^Player, pos :Position, level : [MAXLEVELROW][MAXLEVELCO
     player_draw(p)
 }
 
-player_check_position :: proc(p : ^Player, pos : Position, level : [MAXLEVELROW][MAXLEVELCOL]cur.chtype) {
+player_check_position :: proc(level : ^Level, pos: Position) {
+//player_check_position :: proc(p : ^Player, pos : Position, level : [MAXLEVELROW][MAXLEVELCOL]cur.chtype) {
     switch cur.mvinch(pos.y, pos.x) {
         case '.', '#', '+':
-            player_move(p, pos, level)
+            player_move(&level.player, pos, level.tiles)
+        case 'X', 'G', 'T':
+            combat(&level.player, monster_at(pos, level.monsters[:]), true)
     }
 }

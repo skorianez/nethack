@@ -39,3 +39,12 @@ room_debug :: proc(r : ^Room, posy : i32) {
     cur.mvprintw(posy + 2, 0 ,"Door Bottom : COL:%d, FIX:%d", r.doors[2].x , r.doors[2].y)
     cur.mvprintw(posy + 3, 0 ,"Door Right  : FIX:%d, ROW:%d", r.doors[3].x , r.doors[3].y)
 }
+
+health_debug :: proc(l :^Level) {
+    ypos, xpos := cur.getmaxyx(cur.stdscr)
+    cur.move(ypos - 1,2)
+    cur.printw("Player: %d ", l.player.health)
+    for m in l.monsters {
+        cur.printw("- Monster[%c]: %d ", m.symbol , m.health)
+    }
+}

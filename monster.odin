@@ -1,5 +1,6 @@
 package main
 
+import "core:fmt"
 import cur "extra:curses"
 import "core:math/rand"
 
@@ -78,4 +79,17 @@ monster_troll :: proc() -> Monster {
         defence = 1,
         pathfinding = 1,
     }
+}
+
+monster_at :: proc(pos: Position, monster: []Monster) -> ^Monster {
+    for &m in monster {
+        if m.position == pos {
+            return &m
+        }
+    }
+    fmt.panicf("Deu ruim!!")
+}
+
+monster_kill :: proc(m: ^Monster) {
+    cur.mvaddch(m.position.y, m.position.x, '.')    
 }
