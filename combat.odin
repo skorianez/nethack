@@ -11,6 +11,7 @@ combat :: proc(player : ^Player, monster : ^Monster, patck : bool ) {
             player.health -= monster.attack
         } else {
             monster_kill(monster)
+            player.exp += 1
         }
     // Monster attack
     } else { 

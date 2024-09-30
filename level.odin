@@ -29,8 +29,6 @@ level_init :: proc(l : ^Level, level : int) {
     tiles_save_position(&l.tiles)
 
     l.player = player_new(14, 14, 20) 
-    player_draw(&l.player)
-
     level_add_monsters(l)
 }
 
@@ -127,3 +125,11 @@ pathfinding_random :: proc(pos : ^Position) {
     }
 }
 
+game_hub :: proc(level :  ^Level) {
+    cur.mvprintw(25, 0, "    Level: %d", level.level)
+    cur.printw("    Gold: %d", level.player.gold)
+    cur.printw("    HP: %d(%d)", level.player.health, level.player.max_health )
+    cur.printw("    Attack: %d", level.player.attack)
+    cur.printw("    Exp: %d", level.player.exp)
+    cur.printw("         ")
+}

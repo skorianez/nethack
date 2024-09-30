@@ -5,13 +5,18 @@ import cur "extra:curses"
 Player :: struct {
     position : Position,
     health: int,
+    max_health : int,
     attack: int,
+    gold: int,
+    exp: int,
+
 }
 
 player_new :: proc(y_pos, x_pos : i32 , health : int ) -> Player {
     return {
         position = {x_pos , y_pos },
         health = health,
+        max_health = health,
         attack = 1,
     }
 }
