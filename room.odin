@@ -10,15 +10,6 @@ Room :: struct {
     // itens : ^Item,
 }
 
-
-room_debug :: proc(r : ^Room, posy : i32) {
-    
-    cur.mvprintw(posy, 0     ,"Door Top    : COL:%d, FIX:%d", r.doors[0].x , r.doors[0].y)
-    cur.mvprintw(posy + 1, 0 ,"Door Left   : FIX:%d, ROW:%d", r.doors[1].x , r.doors[1].y)
-    cur.mvprintw(posy + 2, 0 ,"Door Bottom : COL:%d, FIX:%d", r.doors[2].x , r.doors[2].y)
-    cur.mvprintw(posy + 3, 0 ,"Door Right  : FIX:%d, ROW:%d", r.doors[3].x , r.doors[3].y)
-}
-
 room_init :: proc(x, y, h, w : i32) -> Room {
     d : [4]Position
 

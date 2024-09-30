@@ -10,16 +10,15 @@ main :: proc() {
     level := Level{}
     level_init(&level, 1)
 
-    user := player_new(14, 14, 20) 
-    player_draw(&user)
-
+  
     for {
         ch := cur.getch()        
         if ch == 'q'{ break }
-        newPos := player_input(&user, ch)
-        player_check_position(&user, newPos, level.tiles)
+        newPos := player_input(&level.player, ch)
+        player_check_position(&level.player, newPos, level.tiles)
+        level_move_monsters(&level)
 
-        player_draw(&user)
+        player_draw(&level.player)
     }
 }
 

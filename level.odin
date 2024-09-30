@@ -15,6 +15,7 @@ Level :: struct {
     level : int,
     tiles : [MAXLEVELROW][MAXLEVELCOL]cur.chtype,
     rooms : [dynamic]Room,
+    player : Player,
     monsters: [dynamic]Monster,
 }
 
@@ -23,8 +24,13 @@ level_init :: proc(l : ^Level, level : int) {
     append(&l.rooms, room_init(13, 13, 6, 8))
     append(&l.rooms, room_init(40, 2, 6, 8))
     append(&l.rooms, room_init(40, 10, 8, 12)) 
+    
     level_draw(l)
     tiles_save_position(&l.tiles)
+
+    l.player = player_new(14, 14, 20) 
+    player_draw(&l.player)
+
     level_add_monsters(l)
 }
 
@@ -45,20 +51,6 @@ level_draw :: proc(l: ^Level) {
     door_connect(&l.rooms[1].doors[2], &l.rooms[0].doors[0])
 }
 
-level_debug :: proc(l : ^Level) {
-    row : i32 = 2
-    for &room, idx in l.rooms {
-        cur.mvprintw(row, 0, "Room:%d\b COL:%d -> x+w:%d | ROW:%d -> y+h:%d", 
-            idx, 
-            room.position.x, room.position.x + room.width - 1,
-            room.position.y, room.position.y + room.height - 1,
-        )
-        
-        room_debug(&room, row + 1)
-        row += 6
-    }
-}
-
 tiles_save_position :: proc(l: ^[MAXLEVELROW][MAXLEVELCOL]cur.chtype) {
     //positions : [MAXLEVELROW][MAXLEVELCOL]u8
     for y in 0..<MAXLEVELROW {
@@ -69,18 +61,36 @@ tiles_save_position :: proc(l: ^[MAXLEVELROW][MAXLEVELCOL]cur.chtype) {
     //return positions
 }
 
-tiles_debug :: proc(l : ^[MAXLEVELROW][MAXLEVELCOL]cur.chtype ){
-    ymax, xmax := cur.getmaxyx(cur.stdscr)
-    yt := MAXLEVELROW > ymax ? ymax : MAXLEVELROW
-    xt := MAXLEVELROW > xmax ? xmax : MAXLEVELCOL
-    cur.clear()
-    cur.refresh()
-    for y in 0..<yt {
-        for x in 0..<xt {
-            cur.mvaddch(y, x, cur.chtype(l[y][x]))
-            //cur.mvaddch(y,x,'+')
+level_move_monsters :: proc(l: ^Level) {
+    for &m in l.monsters {
+        if m.pathfinding == 1 {
+            // RANDOM
+        } else {
+            // SEEK
+            cur.mvaddch(m.position.y, m.position.x, '.')
+            pathfinding_seek(&m.position, l.player.position)
+            monster_draw(&m)
         }
     }
-    cur.mvprintw(0,0,"** COPIA **")
-    
+}
+
+
+pathfinding_seek :: proc(start : ^Position, dest: Position) {
+    // step left
+    if (abs((start.x - 1) - dest.x) < abs(start.x - dest.x)) && 
+        (cur.mvinch(start.y, start.x - 1) == '.') {
+            start.x -= 1
+    // step right
+    } else if (abs((start.x + 1) - dest.x) < abs(start.x - dest.x)) && 
+        (cur.mvinch(start.y, start.x + 1) == '.') {
+            start.x += 1
+    // step down
+    } else if (abs((start.y + 1) - dest.y) < abs(start.y - dest.y)) && 
+        (cur.mvinch(start.y + 1, start.x) == '.') {
+            start.y += 1
+    // step up
+    } else if (abs((start.y - 1) - dest.y) < abs(start.y - dest.y)) && 
+        (cur.mvinch(start.y - 1, start.x) == '.') {
+            start.y -= 1
+    }
 }

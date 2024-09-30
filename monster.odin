@@ -15,12 +15,22 @@ Monster :: struct {
 
 monster_select :: proc(level: int, room : ^Room) -> Monster {
     mtemp : Monster
+    mt : u32 // Monster type
     switch level {
-        case 1,2:
+        case 1,2,3:
+            mt = (rand.uint32() %% 2) + 1
+        case 4,5:
+            mt = (rand.uint32() %% 2) + 2
+        case 6:
+            mt = 3
+           
+    }
+    switch mt {
+        case 1:
             mtemp = monster_spider()
-        case 3,4:
+        case 2:
             mtemp = monster_goblin()
-        case 5:
+        case 3:
             mtemp = monster_troll()
     }
     monster_position(&mtemp, room)
@@ -36,7 +46,6 @@ monster_position :: proc(m :^Monster, r : ^Room){
 monster_draw :: proc(m: ^Monster) {
     cur.mvaddch(m.position.y, m.position.x, m.symbol)
 }
-
 
 monster_spider :: proc() -> Monster {
     return {
