@@ -9,10 +9,47 @@ Room :: struct {
     doors: [4]Position, 
     // itens : ^Item,
 }
+/*
+### GRID ###
+0  - 33 - 66 - 99
+   G0 | G1  | G2
+12 --------------
+   G3 | G4  | G5 
+25 HUB SCREEN
+*/
 
-room_init :: proc(x, y, h, w : i32) -> Room {
+room_init :: proc(grid: int) -> Room {
+
+    x, y : i32
+    switch grid {
+        case 0:
+            x = 0
+            y = 0
+        case 1:
+            x = 33
+            y = 0
+        case 2:
+            x = 66
+            y = 0
+        case 3:
+            x = 0
+            y = 14
+        case 4:
+            x = 33
+            y = 14
+        case 5:
+            x = 66
+            y = 14
+    }
+    h := i32(rand.uint32()) %% 6 + 4
+    w := i32(rand.uint32()) %% 14 + 4
+    
+    x += i32(rand.uint32()) %% (29 - w + 1)
+    y += i32(rand.uint32()) %% (9 - h + 1)
+    
+
+    // Doors
     d : [4]Position
-
     d[0] = {i32(rand.uint32()) %% (w - 2) + x + 1, y}         // top door
     d[1] = {x, i32(rand.uint32()) %% (h - 2) + y + 1}         // left door
     d[2] = {i32(rand.uint32()) %% (w - 2) + x + 1, y + h - 1} // bottom door

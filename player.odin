@@ -12,11 +12,11 @@ Player :: struct {
 
 }
 
-player_new :: proc(y_pos, x_pos : i32 , health : int ) -> Player {
+HEALTH :: 20
+player_new :: proc() -> Player {
     return {
-        position = {x_pos , y_pos },
-        health = health,
-        max_health = health,
+        health = HEALTH,
+        max_health = HEALTH,
         attack = 1,
     }
 }

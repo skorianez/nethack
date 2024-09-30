@@ -21,14 +21,26 @@ Level :: struct {
 
 level_init :: proc(l : ^Level, level : int) {
     l.level = level
-    append(&l.rooms, room_init(13, 13, 6, 8))
-    append(&l.rooms, room_init(40, 2, 6, 8))
-    append(&l.rooms, room_init(40, 10, 8, 12)) 
+
+    // CREATE ROOM
+    for g in 0..<6 {
+        append(&l.rooms, room_init(g))
+    }
     
-    level_draw(l)
+    // DRAW ROOM
+    for &room in l.rooms {
+        room_draw(&room)
+    }
+    // SAVE POSITION
     tiles_save_position(&l.tiles)
 
-    l.player = player_new(14, 14, 20) 
+    // CONNECT DOORS
+    //door_connect(&l.rooms[0].doors[3], &l.rooms[2].doors[1])
+    //door_connect(&l.rooms[1].doors[2], &l.rooms[0].doors[0])
+
+    // ADD A PLAYER
+    l.player = player_new() 
+    level_add_player(l)
     level_add_monsters(l)
 }
 
@@ -41,12 +53,9 @@ level_add_monsters :: proc(l: ^Level) {
     }
 }
 
-level_draw :: proc(l: ^Level) {
-    for &room in l.rooms {
-        room_draw(&room)
-    }
-    door_connect(&l.rooms[0].doors[3], &l.rooms[2].doors[1])
-    door_connect(&l.rooms[1].doors[2], &l.rooms[0].doors[0])
+level_add_player :: proc(l: ^Level) {
+    l.player.position.x = l.rooms[3].position.x + 1
+    l.player.position.y = l.rooms[3].position.y + 1
 }
 
 tiles_save_position :: proc(l: ^[MAXLEVELROW][MAXLEVELCOL]cur.chtype) {
